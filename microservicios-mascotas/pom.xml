@@ -20,6 +20,13 @@
 	</properties>
 	<dependencies>
 		<dependency>
+
+			<groupId>cl.otelio.microservicios.commons.mascotas</groupId>
+			<artifactId>commons-mascotas</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
 			<groupId>cl.otelio.microservicios.commons</groupId>
 			<artifactId>commons-microservicios</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

@@ -1,4 +1,4 @@
-package cl.otelio.microservicios.app.mascotas.models.entity;
+package cl.otelio.microservicios.commons.mascotas.models.entity;
 
 import java.util.Date;
 
@@ -24,16 +24,30 @@ public class Mascota {
 	private Long id;
 	private String nombre;
 	private String raza;
-	
+
 	@Column(name = "fecha_nacimiento")
 	private Date fechaNacimiento;
-	
+
 	@Column(name = "created_at")
 	private Date createdAt;
-	
+
 	@PrePersist
 	public void prePersist() {
 		this.createdAt = new Date();
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Mascota)) {
+			return false;
+		}
+		
+		Mascota m = (Mascota) obj;
+
+		return this.id != null && this.id.equals(m.getId());
+	}
+
 }
