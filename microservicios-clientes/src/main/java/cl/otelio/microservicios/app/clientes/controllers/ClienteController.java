@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import cl.otelio.microservicios.app.clientes.models.entity.Cliente;
+import cl.otelio.microservicios.app.clientes.models.entity.ClienteMascota;
 import cl.otelio.microservicios.app.clientes.services.ClienteService;
 import cl.otelio.microservicios.commons.controllers.CommonController;
 import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
@@ -39,9 +40,15 @@ public class ClienteController extends CommonController<Cliente, ClienteService>
 		if (!o.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
+		
+
+		
 		Cliente clienteDb = o.get();
 		mascotas.forEach(m -> {
-			clienteDb.addMascota(m);
+			ClienteMascota clienteMascota = new ClienteMascota();
+			clienteMascota.setMascotaId(m.getId());
+			clienteMascota.setCliente(clienteDb);
+			clienteDb.addClienteMascota(clienteMascota);
 		});
 		return ResponseEntity.status(HttpStatus.CREATED).body(this.service.save(clienteDb));
 
@@ -54,7 +61,9 @@ public class ClienteController extends CommonController<Cliente, ClienteService>
 			return ResponseEntity.notFound().build();
 		}
 		Cliente clienteDb = o.get();
-		clienteDb.removeMascota(mascota);
+		ClienteMascota clienteMascota = new ClienteMascota();
+		clienteMascota.setMascotaId(mascota.getId());
+		clienteDb.removeClienteMascota(clienteMascota);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(this.service.save(clienteDb));
 

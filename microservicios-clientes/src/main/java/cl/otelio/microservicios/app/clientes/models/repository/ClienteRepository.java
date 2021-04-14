@@ -8,7 +8,7 @@ import cl.otelio.microservicios.app.clientes.models.entity.Cliente;
 
 public interface ClienteRepository extends PagingAndSortingRepository<Cliente, Long> {
 
-	@Query("select c from Cliente c join fetch c.mascotas m where m.id=?1")
+	@Query("select c from Cliente c join fetch c.clienteMascotas m where m.mascotaId=?1")
 	public Cliente findClienteByMascotaId(Long id);
 	
 }

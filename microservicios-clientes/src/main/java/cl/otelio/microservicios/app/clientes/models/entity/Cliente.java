@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,6 +16,9 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 import lombok.Getter;
@@ -35,7 +39,11 @@ public class Cliente {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createAt;
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@JsonIgnoreProperties(value={"cliente"}, allowSetters = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "cliente", cascade= CascadeType.ALL, orphanRemoval = true)
+	private List<ClienteMascota> clienteMascotas;
+	
+	@Transient
 	private List<Mascota> mascotas;
 
 	@PrePersist
@@ -45,6 +53,8 @@ public class Cliente {
 
 	public Cliente() {
 		this.mascotas = new ArrayList<>();
+		this.clienteMascotas = new ArrayList<>();
+
 	}
 	
 	public void addMascota(Mascota mascota) {
@@ -55,4 +65,14 @@ public class Cliente {
 		this.mascotas.remove(mascota);
 	}
 
+	public void addClienteMascota(ClienteMascota clienteMascota) {
+		this.clienteMascotas.add(clienteMascota);
+	}
+	
+	public void removeClienteMascota(ClienteMascota clienteMascota) {
+		this.clienteMascotas.remove(clienteMascota);
+	}
+	
+	
+	
 }
