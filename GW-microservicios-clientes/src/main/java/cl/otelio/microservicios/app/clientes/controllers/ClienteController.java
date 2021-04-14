@@ -1,8 +1,11 @@
 package cl.otelio.microservicios.app.clientes.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +22,17 @@ import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 @RestController
 public class ClienteController extends CommonController<Cliente, ClienteService> {
 
+	@Value("${config.balanceador.test}")
+	private String balanceadorTest;
 
+	@GetMapping("/balanceador-test")
+	public ResponseEntity<?> balanceadorTest() {
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("balanceador", balanceadorTest);
+		response.put("cursos", service.findAll());
+
+		return ResponseEntity.ok(response);
+	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<?> editar(@RequestBody Cliente cliente, @PathVariable Long id) {
