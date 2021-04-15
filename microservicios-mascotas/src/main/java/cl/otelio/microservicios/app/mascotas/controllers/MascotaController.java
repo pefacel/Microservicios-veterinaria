@@ -1,5 +1,6 @@
 package cl.otelio.microservicios.app.mascotas.controllers;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cl.otelio.microservicios.app.mascotas.services.MascotaService;
@@ -17,6 +19,12 @@ import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 @RestController
 public class MascotaController extends CommonController<Mascota, MascotaService> {
 
+	
+	@GetMapping("/mascotas-por-cliente")
+	public ResponseEntity<?> obtenerMascotasPorCliente(@RequestParam List<Long> ids){
+		return ResponseEntity.ok(service.findAllByid(ids));
+	}
+	
 
 	@PutMapping("/{id}")
 	public ResponseEntity<?> editar(@RequestBody Mascota mascota, @PathVariable Long id) {

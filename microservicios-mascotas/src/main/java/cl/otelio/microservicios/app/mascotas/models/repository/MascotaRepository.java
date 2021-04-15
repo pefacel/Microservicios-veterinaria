@@ -9,9 +9,10 @@ import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 
 public interface MascotaRepository extends PagingAndSortingRepository<Mascota, Long> {
 
-	@Query("select m from Mascota m where m.nombre like %?1%")
+	@Query("select m from Mascota m where upper(m.nombre) like upper(concat('%',?1,'%'))")
 	public List<Mascota> findByNombre(String term);
  	
+
 	
 }
 

@@ -2,9 +2,13 @@ package cl.otelio.microservicios.app.clientes.controllers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,7 +24,65 @@ import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 @RestController
 public class ClienteController extends CommonController<Cliente, ClienteService> {
 
+	
+	@DeleteMapping("/eliminar-mascota/{id}")
+	public ResponseEntity<?> eliminarClienteMascoPorId(@PathVariable Long id){
+		service.eliminarClienteMascotaPorId(id);
+		return ResponseEntity.noContent().build();
+	}
+	
+	
+	@Override
+	@GetMapping
+	public ResponseEntity<?> listar() {
+		List<Cliente> clientes = ((List<Cliente>) service.findAll()).stream().map(c -> {
+			c.getClienteMascotas().forEach(cm -> {
+				Mascota mascota = new Mascota();
+				mascota.setId(cm.getMascotaId());
+				c.addMascota(mascota);
+			});
+			return c;
+		}).collect(Collectors.toList());
+		return ResponseEntity.ok().body(clientes);
+	}
 
+	@Override
+	@GetMapping("/{id}")
+	public ResponseEntity<?> ver(@PathVariable Long id) {
+
+		Optional<Cliente> o = service.findById(id);
+		if (o.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		Cliente cliente = o.get();
+
+		if (cliente.getClienteMascotas().isEmpty() == false) {
+			List<Long> ids = cliente.getClienteMascotas().stream().map(cm -> 
+			cm.getMascotaId())
+					.collect(Collectors.toList());
+
+			List<Mascota> mascotas = (List<Mascota>) service.obtenerMascotasPorCliente(ids);
+
+			cliente.setMascotas(mascotas);
+		}
+
+		return ResponseEntity.ok().body(cliente);
+	}
+
+	@Override
+	@GetMapping("/pagina")
+	public ResponseEntity<?> listar(Pageable pageable) {
+
+		Page<Cliente> clientes = service.findAll(pageable).map(c -> {
+			c.getClienteMascotas().forEach(cm ->{
+				Mascota mascota = new Mascota();
+				mascota.setId(cm.getMascotaId());
+			c.addMascota(mascota);
+			});
+			return c;
+		});
+		return ResponseEntity.ok().body(clientes);
+	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<?> editar(@RequestBody Cliente cliente, @PathVariable Long id) {
@@ -40,9 +102,7 @@ public class ClienteController extends CommonController<Cliente, ClienteService>
 		if (!o.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		
 
-		
 		Cliente clienteDb = o.get();
 		mascotas.forEach(m -> {
 			ClienteMascota clienteMascota = new ClienteMascota();

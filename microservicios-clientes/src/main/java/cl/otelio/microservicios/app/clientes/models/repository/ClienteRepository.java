@@ -1,6 +1,7 @@
 package cl.otelio.microservicios.app.clientes.models.repository;
 
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -10,5 +11,9 @@ public interface ClienteRepository extends PagingAndSortingRepository<Cliente, L
 
 	@Query("select c from Cliente c join fetch c.clienteMascotas m where m.mascotaId=?1")
 	public Cliente findClienteByMascotaId(Long id);
+	
+	@Modifying
+	@Query("delete from ClienteMascota cm where cm.mascotaId=?1")
+	public void eliminarClienteMascotaPorId(Long id);
 	
 }
