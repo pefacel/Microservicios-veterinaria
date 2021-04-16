@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,14 @@ import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 @RestController
 public class ClienteController extends CommonController<Cliente, ClienteService> {
 
+	
+	
+	@Autowired
+	private Environment env;
+	
+	
+
+	
 	
 	@DeleteMapping("/eliminar-mascota/{id}")
 	public ResponseEntity<?> eliminarClienteMascoPorId(@PathVariable Long id){

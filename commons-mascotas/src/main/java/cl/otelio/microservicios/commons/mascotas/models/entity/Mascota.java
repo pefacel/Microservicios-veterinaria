@@ -25,6 +25,7 @@ public class Mascota {
 	private String nombre;
 	private String raza;
 
+
 	@Column(name = "fecha_nacimiento")
 	private Date fechaNacimiento;
 

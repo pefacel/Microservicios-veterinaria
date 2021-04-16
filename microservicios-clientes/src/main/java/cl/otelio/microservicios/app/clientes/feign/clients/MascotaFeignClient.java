@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 
+
 @FeignClient(name = "microservicio-mascotas")
 public interface MascotaFeignClient {
 

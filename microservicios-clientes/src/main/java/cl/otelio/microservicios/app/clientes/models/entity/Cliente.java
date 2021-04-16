@@ -44,6 +44,10 @@ public class Cliente {
 	private List<ClienteMascota> clienteMascotas;
 	
 	@Transient
+	private Integer port;
+	
+	
+	@Transient
 	private List<Mascota> mascotas;
 
 	@PrePersist
