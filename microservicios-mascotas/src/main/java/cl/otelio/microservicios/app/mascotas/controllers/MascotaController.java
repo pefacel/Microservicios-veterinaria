@@ -22,13 +22,6 @@ import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 public class MascotaController extends CommonController<Mascota, MascotaService> {
 
 
-	
-
-
-
-
-
-
 	@GetMapping("/mascotas-por-cliente")
 	public ResponseEntity<?> obtenerMascotasPorCliente(@RequestParam List<Long> ids){
 		return ResponseEntity.ok(service.findAllByid(ids));
@@ -57,4 +50,6 @@ public class MascotaController extends CommonController<Mascota, MascotaService>
 		return ResponseEntity.ok(service.findByNombre(term));
 	}
 
+	
+	
 }

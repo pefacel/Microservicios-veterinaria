@@ -1,5 +1,6 @@
 package cl.otelio.microservicios.app.clientes.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+
+
 import cl.otelio.microservicios.app.clientes.models.entity.Cliente;
 import cl.otelio.microservicios.app.clientes.models.entity.ClienteMascota;
 import cl.otelio.microservicios.app.clientes.services.ClienteService;
@@ -31,22 +35,17 @@ import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 @RefreshScope
 public class ClienteController extends CommonController<Cliente, ClienteService> {
 
-	
-	
 	@Autowired
 	private Environment env;
-	
-	@Value("${configuracion.texto}")
-	private String texto;
-	
-	
+
+
+
 	@DeleteMapping("/eliminar-mascota/{id}")
-	public ResponseEntity<?> eliminarClienteMascoPorId(@PathVariable Long id){
+	public ResponseEntity<?> eliminarClienteMascoPorId(@PathVariable Long id) {
 		service.eliminarClienteMascotaPorId(id);
 		return ResponseEntity.noContent().build();
 	}
-	
-	
+
 	@Override
 	@GetMapping
 	public ResponseEntity<?> listar() {
@@ -72,8 +71,7 @@ public class ClienteController extends CommonController<Cliente, ClienteService>
 		Cliente cliente = o.get();
 
 		if (cliente.getClienteMascotas().isEmpty() == false) {
-			List<Long> ids = cliente.getClienteMascotas().stream().map(cm -> 
-			cm.getMascotaId())
+			List<Long> ids = cliente.getClienteMascotas().stream().map(cm -> cm.getMascotaId())
 					.collect(Collectors.toList());
 
 			List<Mascota> mascotas = (List<Mascota>) service.obtenerMascotasPorCliente(ids);
@@ -89,10 +87,10 @@ public class ClienteController extends CommonController<Cliente, ClienteService>
 	public ResponseEntity<?> listar(Pageable pageable) {
 
 		Page<Cliente> clientes = service.findAll(pageable).map(c -> {
-			c.getClienteMascotas().forEach(cm ->{
+			c.getClienteMascotas().forEach(cm -> {
 				Mascota mascota = new Mascota();
 				mascota.setId(cm.getMascotaId());
-			c.addMascota(mascota);
+				c.addMascota(mascota);
 			});
 			return c;
 		});
@@ -144,24 +142,30 @@ public class ClienteController extends CommonController<Cliente, ClienteService>
 
 	}
 
+	@HystrixCommand(fallbackMethod = "metodoAlternativo")
 	@GetMapping("/mascota/{id}")
 	public ResponseEntity<?> buscarPorMascotaId(@PathVariable Long id) {
 		Cliente cliente = service.findClienteByMascotaId(id);
 		return ResponseEntity.ok(cliente);
 	}
-	
+
+	public ResponseEntity<?> metodoAlternativo(Long id) {
+		String error = "No encontrado";
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(error);
+	}
+
 	@GetMapping("/obtener-config")
 	public ResponseEntity<?> obtenerConfig() {
-		
-		Map<String,String> jsonf = new HashMap<>();
-		jsonf.put("texto", texto);
-		
-		if(env.getActiveProfiles().length>0 && env.getActiveProfiles()[0].equals("dev")) {
-			
+
+		Map<String, String> jsonf = new HashMap<>();
+
+
+		if (env.getActiveProfiles().length > 0 && env.getActiveProfiles()[0].equals("dev")) {
+
 			jsonf.put("autor.nombre", env.getProperty("configuracion.nombre"));
 		}
-		
-		return new ResponseEntity<Map<String,String>>(jsonf, HttpStatus.OK);
+
+		return new ResponseEntity<Map<String, String>>(jsonf, HttpStatus.OK);
 	}
 
 }
