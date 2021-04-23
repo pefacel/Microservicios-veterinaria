@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import cl.otelio.microservicios.commons.controllers.CommonController;
 import cl.otelio.microservicios.commons.mascotas.models.entity.Mascota;
 
 @RestController
+@RefreshScope
 public class ClienteController extends CommonController<Cliente, ClienteService> {
 
 	
@@ -34,8 +36,8 @@ public class ClienteController extends CommonController<Cliente, ClienteService>
 	@Autowired
 	private Environment env;
 	
-//	@Value("${configuracion.texto}")
-//	private String texto;
+	@Value("${configuracion.texto}")
+	private String texto;
 	
 	
 	@DeleteMapping("/eliminar-mascota/{id}")
@@ -148,18 +150,18 @@ public class ClienteController extends CommonController<Cliente, ClienteService>
 		return ResponseEntity.ok(cliente);
 	}
 	
-//	@GetMapping("/obtener-config")
-//	public ResponseEntity<?> obtenerConfig() {
-//		
-//		Map<String,String> jsonf = new HashMap<>();
-//		jsonf.put("texto", texto);
-//		
-//		if(env.getActiveProfiles().length>0 && env.getActiveProfiles()[0].equals("dev")) {
-//			
-//			jsonf.put("autor.nombre", env.getProperty("configuracion.nombre"));
-//		}
-//		
-//		return new ResponseEntity<Map<String,String>>(jsonf, HttpStatus.OK);
-//	}
+	@GetMapping("/obtener-config")
+	public ResponseEntity<?> obtenerConfig() {
+		
+		Map<String,String> jsonf = new HashMap<>();
+		jsonf.put("texto", texto);
+		
+		if(env.getActiveProfiles().length>0 && env.getActiveProfiles()[0].equals("dev")) {
+			
+			jsonf.put("autor.nombre", env.getProperty("configuracion.nombre"));
+		}
+		
+		return new ResponseEntity<Map<String,String>>(jsonf, HttpStatus.OK);
+	}
 
 }
